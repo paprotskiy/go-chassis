@@ -1,0 +1,54 @@
+services:
+  go-chassis:
+    container_name: go-chassis
+    build:
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION}
+    depends_on:
+      go-chassis-db:
+        condition: service_healthy
+    # use outer repository with standardized and well-documented env presets
+    # for sharing knowledge of project launch specifics
+    # env_file:
+    #   - ../env-files/.env-app
+    ports:
+      - 3033:3000
+    environment:
+      - DEBUG=true
+      - COOLING_DOWN_PERIOD=1s
+      - SOME_ENV="some env value"
+      - SOME_URL=https://some.url
+      - SOME_PERIOD=5h3m25s
+      - PG_HOST=db-srv-1
+      - PG_PORT=5432
+      - PG_USER=user
+      - PG_PASSWORD=password
+      - PG_DB_NAME=go-chassis-db
+      - PG_DB_NAME_DEFAULT=postgres # used for initial db creation
+      - PG_SSL_MODE=disable
+      - PG_CONNS_IDLE=20
+      - PG_CONNS_MAX=200
+
+  go-chassis-db:
+    container_name: db-srv-1
+    build:
+      context: .
+      dockerfile: storage.Dockerfile
+    restart: always
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d go-chassis-db"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    ports:
+      - 5432:5432
+    # use outer repository with standardized and well-documented env presets
+    # for sharing knowledge of project launch specifics
+    # env_file:
+    #   - ../env-files/.env-app
+    environment:
+      - POSTGRES_DB=go-chassis-db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
