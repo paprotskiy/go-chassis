@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -11,30 +12,52 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-const (
-	dockerImage = "postgres:17-alpine"
-	exposedPort = "5432"
-)
+type DbConnParams struct {
+	PgUser     string
+	PgPassword string
+	PgDbName   string
+	PgSslMode  string
+}
+
+type MockParams struct {
+	TestDbImage               string
+	TestDbPort                string
+	ReuseMode                 bool
+	SupressCleanupInReuseMode bool
+	ReuseDbName               string
+}
 
 func NewInstance(
 	ctx context.Context,
-	pgUser, pgPassword string,
-	pgDbName, pgSslMode string,
+	mock *MockParams,
+	conn *DbConnParams,
 ) (*sqlx.DB, func(), error) {
+
+	if mock.ReuseMode && mock.ReuseDbName == "" {
+		return nil, nil, errors.Errorf("reuseDbName must be specified in reuseMode")
+	}
+
+	uniqueName := ""
+	if mock.ReuseMode {
+		uniqueName = mock.ReuseDbName
+	}
+
 	postgresC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
-			Image:        dockerImage,
-			ExposedPorts: []string{exposedPort},
+			Image:        mock.TestDbImage,
+			Name:         uniqueName,
+			ExposedPorts: []string{mock.TestDbPort},
 			Env: map[string]string{
-				"POSTGRES_USER":     pgUser,
-				"POSTGRES_PASSWORD": pgPassword,
-				"POSTGRES_DB":       pgDbName,
+				"POSTGRES_USER":     conn.PgUser,
+				"POSTGRES_PASSWORD": conn.PgPassword,
+				"POSTGRES_DB":       conn.PgDbName,
 			},
 			WaitingFor: wait.
 				ForLog("database system is ready to accept connections").
 				WithOccurrence(2),
 		},
 		Started: true,
+		Reuse:   mock.ReuseMode,
 	})
 
 	if err != nil {
@@ -45,7 +68,7 @@ func NewInstance(
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to get container host")
 	}
-	mappedPort, err := postgresC.MappedPort(ctx, exposedPort)
+	mappedPort, err := postgresC.MappedPort(ctx, nat.Port(mock.TestDbPort))
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to get mapped port")
 	}
@@ -53,10 +76,10 @@ func NewInstance(
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		mappedHost,
 		mappedPort.Port(),
-		pgUser,
-		pgPassword,
-		pgDbName,
-		pgSslMode,
+		conn.PgUser,
+		conn.PgPassword,
+		conn.PgDbName,
+		conn.PgSslMode,
 	)
 
 	db, err := sqlx.Connect("postgres", connStr)
@@ -65,6 +88,10 @@ func NewInstance(
 	}
 
 	cleanup := func() {
+		if mock.ReuseMode && mock.SupressCleanupInReuseMode {
+			return
+		}
+
 		db.Close()
 		_ = postgresC.Terminate(ctx)
 	}

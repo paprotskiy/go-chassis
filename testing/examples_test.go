@@ -13,14 +13,18 @@ import (
 )
 
 const (
+	freePortForEmbeddedDb uint32 = 5555
+
 	pgUser     = "user-test"
 	pgPassword = "password-test"
 	pgDbName   = "dbname-test"
 	pgSslMode  = "disable"
-)
 
-var (
-	freePort uint32 = 5555
+	// dbImage = "postgres:17-alpine"
+	dbImage           = "my-postgres-unprivileged:latest"
+	dbExposedPort     = "5432"
+	dbReuseMode       = true
+	dbReuseModeDbName = "back-scratch-testdb"
 )
 
 func Test_TestContainers_Snippet(t *testing.T) {
@@ -28,27 +32,39 @@ func Test_TestContainers_Snippet(t *testing.T) {
 		start := time.Now()
 		db, cleanup, err := testcontainers.NewInstance(
 			context.Background(),
-			pgUser,
-			pgPassword,
-			pgDbName,
-			pgSslMode,
+			&testcontainers.MockParams{
+				TestDbImage:               dbImage,
+				TestDbPort:                "",
+				ReuseMode:                 dbReuseMode,
+				SupressCleanupInReuseMode: false,
+				ReuseDbName:               dbReuseModeDbName,
+			},
+			&testcontainers.DbConnParams{
+				PgUser:     pgUser,
+				PgPassword: pgPassword,
+				PgDbName:   pgDbName,
+				PgSslMode:  pgSslMode,
+			},
 		)
 		if err != nil {
 			t.Log(errors.Wrap(err, "failed to set up postgres"))
 			return
 		}
+		if false {
+			defer cleanup()
+		}
 
 		var now time.Time
+
 		err = db.Get(&now, "SELECT NOW()")
 		if err != nil {
 			t.Fatalf("failed to query database: %v", err)
 		}
 
 		t.Log(idx, ": ", time.Since(start).Milliseconds())
-		defer cleanup()
 	}
 
-	t.Fatal("knock out test for seeing logs")
+	t.Error("knock out test for seeing logs")
 }
 
 func Test_EmbeddedSnippet(t *testing.T) {
@@ -57,7 +73,7 @@ func Test_EmbeddedSnippet(t *testing.T) {
 
 		db, cleanup, err := embedded.NewInstance(
 			"localhost",
-			freePort,
+			freePortForEmbeddedDb,
 			pgUser,
 			pgPassword,
 			pgDbName,
