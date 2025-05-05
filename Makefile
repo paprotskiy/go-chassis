@@ -44,5 +44,5 @@ new-migration:
 	@while [ -z "$$NAME" ]; do \
 		read -p "Enter migration name: " NAME; \
 	done; \
-	migrate create -ext sql -dir src/internal/adapters/persistent/migrations $$NAME
+	migrate create -ext sql -dir src/internal/adapters/storage/migrations $$NAME
 	exit 0
