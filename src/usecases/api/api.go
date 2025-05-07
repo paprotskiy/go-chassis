@@ -23,7 +23,7 @@ func ListenAndServe(
 
 	r.Use(logger.StructuredLoggerMiddleware(logLevel, appVersion))
 	r.Use(middleware.StripSlashes)
-	r.Use(middleware.Heartbeat("/alive")) // TODO alive/ready response?
+	r.Use(middleware.Heartbeat("/alive")) // TODO: alive/ready response?
 
 	r.Route("/", func(r chi.Router) {
 

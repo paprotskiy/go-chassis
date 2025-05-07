@@ -44,7 +44,7 @@ type toutBoxMsgRelay struct {
 }
 
 func (t toutBoxMsgRelay) Run(ctx context.Context) {
-	ticker := time.NewTicker(t.scrapingPeriod).C // TODO extract for testability
+	ticker := time.NewTicker(t.scrapingPeriod).C // TODO: extract for testability
 
 	skipTicker := make(chan struct{}, 1)
 

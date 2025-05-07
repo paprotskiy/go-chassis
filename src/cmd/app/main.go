@@ -100,7 +100,7 @@ func main() {
 	).Run(ctx)
 
 	go func() {
-		err := api.ListenAndServe(fmt.Sprintf(":%s", apiPort), apiService, logLevel, version) // TODO port as env
+		err := api.ListenAndServe(fmt.Sprintf(":%s", apiPort), apiService, logLevel, version) // TODO: port as env
 		fatalErrs <- errors.Wrap(err, "http server error")
 	}()
 
