@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	cookieName     = "must-be-preset" // TODO requires configuration
-	cookieLifeTime = 5 * time.Hour
-	salt           = "requires configuration" // TODO create salt strategy
-	stepLifetime   = 10 * time.Minute         // TODO configure if required or reduce
-	stepNotBefore  = 0                        // TODO configure if required or reduce
+	cookieName     = "must-be-preset"         // TODO: requires configuration
+	cookieLifeTime = 5 * time.Hour            //
+	salt           = "requires configuration" // TODO: create salt strategy
+	stepLifetime   = 10 * time.Minute         // TODO: configure if required or reduce
+	stepNotBefore  = 0                        // TODO: configure if required or reduce
 	expClaim       = "exp"
 	nbfClaim       = "nbf"
 	stepKey        = "id"

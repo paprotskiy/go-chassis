@@ -137,14 +137,14 @@ func transaction(ctx context.Context, db *sqlx.DB, isolationLevel sql.IsolationL
 	return nil
 }
 
-// TODO test
+// TODO: test
 func NewCommandProvider(db *sqlx.DB) func(ctx context.Context, isolationLevel sql.IsolationLevel, requests ...Request) error {
 	return func(ctx context.Context, isolationLevel sql.IsolationLevel, requests ...Request) error {
 		return transaction(ctx, db, isolationLevel, false, requests...)
 	}
 }
 
-// TODO test
+// TODO: test
 func NewQueryProvider(db *sqlx.DB) func(ctx context.Context, isolationLevel sql.IsolationLevel, requests ...Request) error {
 	return func(ctx context.Context, isolationLevel sql.IsolationLevel, requests ...Request) error {
 		return transaction(ctx, db, isolationLevel, true, requests...)

@@ -23,9 +23,9 @@ var version = `will be filled after compilation thnx to "-X main.version" flag`
 
 const (
 	apiPort               = "3000"
-	kafkaAddress          = ""              // TODO must be configured
-	toutboxChunkSize      = 50              // TODO must be configured
-	toutboxScrapingPeriod = 3 * time.Second // TODO must be configured
+	kafkaAddress          = ""              // TODO: must be configured
+	toutboxChunkSize      = 50              // TODO: must be configured
+	toutboxScrapingPeriod = 3 * time.Second // TODO: must be configured
 )
 
 func main() {

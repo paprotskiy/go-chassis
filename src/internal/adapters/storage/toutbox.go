@@ -60,7 +60,7 @@ type transactionalOutBoxStorageTemplate struct{}
 
 func (t transactionalOutBoxStorageTemplate) push(tableName func() tableName, payload *ToutboxPayload) Request {
 	return func(ctx context.Context, tx *sqlx.Tx) error {
-		// TODO or copy-paste is better?
+		// TODO: or copy-paste is better?
 		query := fmt.Sprintf(`
 			INSERT INTO %s 
 			(
@@ -90,8 +90,8 @@ func (t transactionalOutBoxStorageTemplate) push(tableName func() tableName, pay
 
 func (t transactionalOutBoxStorageTemplate) pull(tableName func() tableName, chunkSize *int, out *[]ToutboxPayload) Request {
 	return func(ctx context.Context, tx *sqlx.Tx) error {
-		// TODO or copy-paste is better?
-		// TODO some logic leaking with parameter IS NULL
+		// TODO: or copy-paste is better?
+		// TODO: some logic leaking with parameter IS NULL
 		query := fmt.Sprintf(`
 			SELECT 
 				* 

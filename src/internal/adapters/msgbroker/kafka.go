@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO add security layer
+// TODO: add security layer
 
 const (
 	acksAll = "all" // ensure all in-sync
@@ -36,7 +36,7 @@ type kafkaAdapter struct {
 }
 
 func (k *kafkaAdapter) PushToBroker(data []byte) error {
-	return nil // TODO implement by wrapping k.produceMessage
+	return nil // TODO: implement by wrapping k.produceMessage
 }
 
 func (k *kafkaAdapter) produceMessage(
