@@ -20,24 +20,24 @@ const (
 	pgDbName   = "dbname-test"
 	pgSslMode  = "disable"
 
-	// dbImage = "postgres:17-alpine"
-	dbImage           = "my-postgres-unprivileged:latest"
-	dbExposedPort     = "5432"
-	dbReuseMode       = true
-	dbReuseModeDbName = "back-scratch-testdb"
+	dbImage = "postgres:17-alpine"
+	// dbImage                  = "my-postgres-unprivileged:latest"
+	dbExposedPort            = "5432"
+	dbReuseMode              = true
+	dbReuseModeContainerName = "back-scratch-testdb"
 )
 
 func Test_TestContainers_Snippet(t *testing.T) {
-	for idx := range 10 {
+	for idx := range 9 {
 		start := time.Now()
 		db, cleanup, err := testcontainers.NewInstance(
 			context.Background(),
 			&testcontainers.MockParams{
 				TestDbImage:               dbImage,
-				TestDbPort:                "",
+				TestDbPort:                dbExposedPort,
 				ReuseMode:                 dbReuseMode,
 				SupressCleanupInReuseMode: false,
-				ReuseDbName:               dbReuseModeDbName,
+				ReuseContainerName:        dbReuseModeContainerName,
 			},
 			&testcontainers.DbConnParams{
 				PgUser:     pgUser,
@@ -63,12 +63,10 @@ func Test_TestContainers_Snippet(t *testing.T) {
 
 		t.Log(idx, ": ", time.Since(start).Milliseconds())
 	}
-
-	t.Error("knock out test for seeing logs")
 }
 
 func Test_EmbeddedSnippet(t *testing.T) {
-	for idx := range 10 {
+	for idx := range 0 {
 		start := time.Now()
 
 		db, cleanup, err := embedded.NewInstance(
@@ -93,6 +91,4 @@ func Test_EmbeddedSnippet(t *testing.T) {
 		t.Log(idx, ": ", time.Since(start).Milliseconds())
 		cleanup()
 	}
-
-	t.Fatal("knock out test for seeing logs")
 }

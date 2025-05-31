@@ -1,11 +1,10 @@
 module go-chassis
 
-go 1.23.5
-
-replace github.com/paprotskiy/gotest-watcher => ../gotest-watcher/
+go 1.24.3
 
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
+	github.com/docker/go-connections v0.5.0
 	github.com/fergusstrange/embedded-postgres v1.30.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/httplog/v2 v2.1.1
@@ -16,7 +15,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
-	github.com/paprotskiy/gotest-watcher v0.0.3
 	github.com/pkg/errors v0.9.1
 	github.com/testcontainers/testcontainers-go v0.35.0
 )
@@ -34,7 +32,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/docker v27.2.0+incompatible // indirect
-	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect

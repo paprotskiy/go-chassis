@@ -24,7 +24,7 @@ type MockParams struct {
 	TestDbPort                string
 	ReuseMode                 bool
 	SupressCleanupInReuseMode bool
-	ReuseDbName               string
+	ReuseContainerName        string
 }
 
 func NewInstance(
@@ -33,13 +33,13 @@ func NewInstance(
 	conn *DbConnParams,
 ) (*sqlx.DB, func(), error) {
 
-	if mock.ReuseMode && mock.ReuseDbName == "" {
+	if mock.ReuseMode && mock.ReuseContainerName == "" {
 		return nil, nil, errors.Errorf("reuseDbName must be specified in reuseMode")
 	}
 
 	uniqueName := ""
 	if mock.ReuseMode {
-		uniqueName = mock.ReuseDbName
+		uniqueName = mock.ReuseContainerName
 	}
 
 	postgresC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
