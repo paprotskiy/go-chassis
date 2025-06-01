@@ -46,3 +46,11 @@ new-migration:
 	done; \
 	migrate create -ext sql -dir src/internal/adapters/storage/migrations $$NAME
 	exit 0
+
+# go install github.com/ofabry/go-callvis@latest
+call-graph:
+	$(HOME)/go/bin/go-callvis -group pkg ./...
+	
+# go install github.com/kisielk/godepgraph@latest
+deps-graph:
+	$(HOME)/go/bin/godepgraph -novendor -s -p github.com ./src/cmd/app/ > deps.dot
